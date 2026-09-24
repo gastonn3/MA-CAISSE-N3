@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#4f46e5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="Ma Caisse — application de gestion de commerce hors connexion">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="icon" type="image/png" href="./icons/icon-192.png">
+<title>Ma Caisse — Gestion de commerce</title>
+<style>
+:root{--primary:#4f46e5;--primary-dark:#3730a3;--primary-soft:#eef2ff;--success:#059669;--success-soft:#ecfdf5;--danger:#dc2626;--danger-soft:#fef2f2;--warning:#d97706;--bg:#f5f7fb;--card:#fff;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--shadow:0 10px 30px rgba(15,23,42,.06);--radius:18px}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{display:flex;min-height:100vh}
+.sidebar{width:250px;background:#111827;color:#fff;position:fixed;inset:0 auto 0 0;z-index:100;padding:24px 16px;display:flex;flex-direction:column;transition:.3s}.logo{display:flex;align-items:center;gap:12px;padding:0 10px 30px}.logo-icon{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:grid;place-items:center;font-size:21px}.logo h1{font-size:19px}.logo span{display:block;color:#9ca3af;font-size:11px;margin-top:2px}.nav{display:flex;flex-direction:column;gap:6px}.nav button{width:100%;padding:12px 14px;color:#9ca3af;background:transparent;border-radius:12px;text-align:left;display:flex;align-items:center;gap:12px;transition:.2s}.nav button:hover,.nav button.active{color:#fff;background:rgba(255,255,255,.09)}.nav-icon{width:22px;text-align:center}.sidebar-bottom{margin-top:auto;padding:15px 10px 0;border-top:1px solid rgba(255,255,255,.08);color:#9ca3af;font-size:12px}
+.main{margin-left:250px;width:calc(100% - 250px)}.topbar{height:74px;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:50}.mobile-menu{display:none;background:var(--primary-soft);color:var(--primary);width:40px;height:40px;border-radius:10px;font-size:20px}.topbar-left{display:flex;align-items:center;gap:10px}.page-title{font-size:19px;font-weight:800}.date-label{color:var(--muted);font-size:13px}.content{max-width:1450px;margin:auto;padding:30px}.page{display:none}.page.active{display:block}
+.welcome{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:25px;gap:20px}.welcome h2{font-size:28px;letter-spacing:-1px;margin-bottom:5px}.welcome p,.section-head p{color:var(--muted)}.primary-btn{background:var(--primary);color:#fff;padding:12px 17px;border-radius:12px;font-weight:700;transition:.2s;box-shadow:0 6px 16px rgba(79,70,229,.18)}.primary-btn:hover{background:var(--primary-dark);transform:translateY(-1px)}.secondary-btn{background:#fff;border:1px solid var(--border);color:var(--text);padding:11px 15px;border-radius:11px;font-weight:650;transition:.2s}.secondary-btn:hover{background:#f9fafb}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}.stat-card,.card,.item-card,.analysis-card,.setting-card{background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow)}.stat-card{border-radius:var(--radius);padding:20px}.stat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.stat-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center}.icon-blue{background:var(--primary-soft)}.icon-green{background:var(--success-soft)}.icon-red{background:var(--danger-soft)}.icon-orange{background:#fffbeb}.stat-label{color:var(--muted);font-size:13px;font-weight:600}.stat-value{font-size:25px;font-weight:850;letter-spacing:-.7px;word-break:break-word}.stat-change{margin-top:7px;font-size:12px;color:var(--muted)}
+.dashboard-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:18px;margin-bottom:20px}.card{border-radius:var(--radius)}.card-header{padding:20px 20px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}.card-title{font-size:16px;font-weight:800}.card-subtitle{color:var(--muted);font-size:12px;margin-top:3px}.card-body{padding:0 20px 20px}.chart{height:260px;padding:15px 10px 0}.chart svg{width:100%;height:100%;overflow:visible}.chart-empty{height:100%;display:grid;place-items:center;color:var(--muted);font-size:13px}.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.quick-btn{padding:15px;border-radius:13px;border:1px solid var(--border);background:#fff;text-align:left;transition:.2s}.quick-btn:hover{border-color:#c7d2fe;background:#fafaff;transform:translateY(-2px)}.quick-btn strong{display:block;font-size:13px;margin-top:7px}.quick-btn span{color:var(--muted);font-size:11px}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:650px}th,td{padding:14px 10px;border-bottom:1px solid var(--border);text-align:left;font-size:13px}th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}.amount-positive{color:var(--success);font-weight:750}.amount-negative{color:var(--danger);font-weight:750}.badge{display:inline-flex;padding:5px 8px;border-radius:8px;font-size:10px;font-weight:700}.badge-entry{background:var(--success-soft);color:var(--success)}.badge-expense{background:var(--danger-soft);color:var(--danger)}.empty{text-align:center;padding:45px 20px;color:var(--muted)}.empty-icon{font-size:35px;margin-bottom:10px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}.section-head h2{font-size:25px;letter-spacing:-.7px}.filters{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:16px}.filter-btn{background:#fff;border:1px solid var(--border);padding:9px 13px;border-radius:10px;color:var(--muted);font-size:12px;font-weight:650}.filter-btn.active{background:var(--primary-soft);border-color:#c7d2fe;color:var(--primary)}
+.form-card{max-width:720px;margin:auto;padding:25px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.form-group{display:flex;flex-direction:column;gap:7px}.form-group.full{grid-column:1/-1}.form-group label{font-size:12px;font-weight:750}.form-group input,.form-group select,.form-group textarea{width:100%;border:1px solid var(--border);border-radius:11px;padding:12px 13px;background:#fff;outline:none;transition:.2s}.form-group textarea{min-height:90px;resize:vertical}.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#818cf8;box-shadow:0 0 0 3px rgba(99,102,241,.1)}.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.items-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.item-card{border-radius:16px;padding:18px}.item-card-top{display:flex;justify-content:space-between;gap:10px;margin-bottom:16px}.item-name{font-weight:800}.item-category{color:var(--muted);font-size:11px;margin-top:3px}.item-price{font-size:20px;font-weight:850}.item-info{display:grid;grid-template-columns:1fr 1fr;gap:10px}.info-box{background:#f8fafc;padding:10px;border-radius:10px}.info-box small{display:block;color:var(--muted);font-size:10px;margin-bottom:3px}.info-box strong{font-size:13px}
+.analysis-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px}.analysis-card{border-radius:16px;padding:20px}.analysis-card h3{font-size:13px;color:var(--muted);margin-bottom:10px}.analysis-card strong{font-size:24px}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.setting-card{border-radius:16px;padding:22px}.setting-card h3{font-size:15px;margin-bottom:4px}.setting-card p{color:var(--muted);font-size:12px;margin-bottom:18px}.setting-actions{display:flex;flex-wrap:wrap;gap:9px}
+
+.product-dashboard{margin-top:20px}.product-dashboard .card-header{align-items:flex-start}.profit-positive{color:var(--success);font-weight:800}.profit-negative{color:var(--danger);font-weight:800}.metric-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 20px 20px}.metric-box{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:12px}.metric-box small{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}.metric-box strong{font-size:15px}.export-actions{display:flex;flex-wrap:wrap;gap:9px}.period-select{border:1px solid var(--border);background:#fff;border-radius:10px;padding:9px 12px;font-size:12px;color:var(--text)}
+@media(max-width:700px){.metric-strip{grid-template-columns:1fr 1fr;margin:0 15px 15px}.product-dashboard .card-header{padding:16px}.product-dashboard .card-body{padding:0 15px 15px}}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(5px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}.modal-overlay.show{display:flex}.modal{background:#fff;width:min(560px,100%);border-radius:20px;box-shadow:0 25px 70px rgba(0,0,0,.18);max-height:90vh;overflow:auto}.modal-header{padding:20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}.modal-header h3{font-size:17px}.close{width:35px;height:35px;border-radius:9px;background:#f3f4f6;color:#4b5563}.modal-body{padding:20px}.toast{position:fixed;right:22px;bottom:22px;z-index:1000;background:#111827;color:#fff;padding:13px 16px;border-radius:12px;box-shadow:0 15px 40px rgba(0,0,0,.18);font-size:13px;opacity:0;transform:translateY(15px);pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:none}
+@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr)}.dashboard-grid{grid-template-columns:1fr}.items-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:800px){.sidebar{transform:translateX(-100%);box-shadow:20px 0 40px rgba(0,0,0,.12)}.sidebar.open{transform:none}.main{margin-left:0;width:100%}.mobile-menu{display:block}.topbar{padding:0 16px}.content{padding:20px 15px}.welcome{align-items:flex-start;flex-direction:column}.welcome h2{font-size:24px}.settings-grid{grid-template-columns:1fr}}@media(max-width:600px){.stats-grid{grid-template-columns:1fr 1fr;gap:10px}.stat-card{padding:15px}.stat-value{font-size:19px}.stat-icon{width:35px;height:35px}.form-grid{grid-template-columns:1fr}.form-group.full{grid-column:auto}.items-grid,.analysis-grid{grid-template-columns:1fr}.section-head{align-items:flex-start;flex-direction:column}.quick-actions{grid-template-columns:1fr 1fr}.date-label{display:none}}@media(max-width:390px){.stats-grid,.quick-actions{grid-template-columns:1fr}}
+
+.profile-brand{display:flex;align-items:center;gap:14px;margin-bottom:18px}.brand-preview{width:64px;height:64px;border-radius:16px;object-fit:cover;background:var(--primary-soft);display:grid;place-items:center;font-size:28px;border:1px solid var(--border)}.brand-name{font-size:18px;font-weight:850}.brand-description{font-size:12px;color:var(--muted);margin-top:3px;max-width:430px}.logo-img{width:42px;height:42px;border-radius:13px;object-fit:cover;display:none}.setup-modal .modal{width:min(620px,100%)}.setup-hero{padding:8px 0 18px}.setup-hero h2{font-size:25px;letter-spacing:-.7px;margin-bottom:6px}.setup-hero p{color:var(--muted);font-size:13px;line-height:1.55}.logo-upload{display:flex;align-items:center;gap:14px;padding:14px;border:1px dashed #c7d2fe;border-radius:14px;background:#fafaff}.logo-upload label{display:inline-flex;align-items:center;justify-content:center;padding:10px 13px;border-radius:10px;background:var(--primary-soft);color:var(--primary);font-weight:750;font-size:12px;cursor:pointer}.logo-upload small{color:var(--muted);font-size:11px}.install-card{border:1px solid #c7d2fe;background:linear-gradient(135deg,#fafaff,#fff)}.install-btn{background:#111827;color:#fff}.offline-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;background:var(--success-soft);color:var(--success);font-size:10px;font-weight:750;margin-top:10px}
+
+.founder-card{overflow:hidden;border:1px solid var(--border);background:linear-gradient(145deg,#fff,#fafaff)}
+.founder-head{display:flex;align-items:center;gap:16px;padding:20px;border-bottom:1px solid var(--border)}
+.founder-photo{width:92px;height:92px;border-radius:22px;object-fit:cover;object-position:center;box-shadow:0 10px 28px rgba(15,23,42,.14);border:3px solid #fff}
+.founder-name{font-size:22px;font-weight:900;letter-spacing:-.5px}.founder-role{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.5}
+.founder-body{padding:20px}.founder-bio{font-size:13px;line-height:1.7;color:var(--text);margin:0 0 18px}
+.social-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.social-item{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--border);border-radius:14px;background:#fff;text-decoration:none;color:inherit;transition:.2s}
+.social-item:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,23,42,.08)}
+.social-icon{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:900;font-size:17px;flex:0 0 40px}
+.whatsapp-icon{background:#dcfce7;color:#16a34a}.youtube-icon{background:#fee2e2;color:#dc2626}.facebook-icon{background:#dbeafe;color:#2563eb}
+.social-label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}.social-value{font-size:13px;font-weight:800;margin-top:2px}
+.about-note{margin-top:16px;padding:13px 14px;border-radius:13px;background:var(--primary-soft);color:var(--primary);font-size:11px;line-height:1.55}
+@media(max-width:650px){.social-grid{grid-template-columns:1fr}.founder-head{align-items:flex-start}.founder-photo{width:78px;height:78px;border-radius:18px}.founder-name{font-size:19px}}
+
+/* V1.4 professional identity */
+.app-logo-img{width:42px;height:42px;border-radius:13px;object-fit:cover;display:none}
+.professional-download{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.download-btn{background:#111827;color:#fff;padding:12px 16px;border-radius:12px;font-weight:800;display:inline-flex;align-items:center;gap:8px;text-decoration:none;box-shadow:0 8px 20px rgba(17,24,39,.14)}
+.download-btn:hover{transform:translateY(-1px);background:#0b1220}
+.founder-mini{display:grid;grid-template-columns:84px 1fr;gap:16px;align-items:center}
+.founder-mini img{width:84px;height:84px;border-radius:18px;object-fit:cover;box-shadow:0 8px 24px rgba(15,23,42,.12)}
+.founder-mini h4{font-size:18px;margin-bottom:4px}.founder-mini p{margin:0 0 9px!important;line-height:1.55}
+.founder-links{display:flex;flex-wrap:wrap;gap:8px}.founder-link{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:#fff;padding:8px 10px;border-radius:10px;text-decoration:none;color:var(--text);font-size:11px;font-weight:800}
+.founder-link.whatsapp{color:#15803d;background:#f0fdf4;border-color:#bbf7d0}.founder-link.youtube{color:#dc2626;background:#fef2f2;border-color:#fecaca}.founder-link.facebook{color:#2563eb;background:#eff6ff;border-color:#bfdbfe}
+.about-founder-full{display:grid;grid-template-columns:110px 1fr;gap:18px;align-items:start}
+.about-founder-full img{width:110px;height:110px;border-radius:22px;object-fit:cover}
+.about-founder-full h3{font-size:22px;margin-bottom:5px}.about-founder-full .tag{display:inline-block;background:var(--primary-soft);color:var(--primary);padding:5px 9px;border-radius:999px;font-size:10px;font-weight:800;margin-bottom:9px}
+.about-founder-full p{line-height:1.65;color:var(--muted);font-size:12px}
+@media(max-width:600px){.founder-mini{grid-template-columns:1fr}.founder-mini img{width:70px;height:70px}.about-founder-full{grid-template-columns:1fr}.about-founder-full img{width:100px;height:100px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<div class="logo"><img class="logo-icon app-logo-img" id="appLogoImg" src="./icons/icon-192.png" alt="Ma Caisse"><img id="sidebarLogo" class="logo-img" alt="Logo"><div><h1 id="brandName">Ma Caisse</h1><span id="brandTagline">Gestion simple du commerce</span></div></div>
+<nav class="nav">
+<button class="active" data-page="dashboard">⌂ <span>Tableau de bord</span></button>
+<button data-page="operations">↕ <span>Opérations</span></button>
+<button data-page="history">☷ <span>Historique</span></button>
+<button data-page="products">▣ <span>Produits</span></button>
+<button data-page="sales">🛒 <span>Ventes</span></button>
+<button data-page="clients">♙ <span>Clients</span></button>
+<button data-page="statistics">▥ <span>Statistiques</span></button>
+<button data-page="about">ℹ <span>À propos</span></button>
+<button data-page="settings">⚙ <span>Paramètres</span></button>
+</nav>
+<div class="sidebar-bottom">Version locale · Vos données restent sur cet appareil.</div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+<div class="topbar-left"><button class="mobile-menu" id="mobileMenu">☰</button><div><div class="page-title" id="pageTitle">Tableau de bord</div><div class="date-label" id="currentDate"></div></div></div>
+<button class="primary-btn" id="topAddBtn">＋ Ajouter</button>
+</header>
+
+<div class="content">
+<section class="page active" id="page-dashboard">
+<div class="welcome"><div><h2>Bonjour 👋</h2><p id="welcomeDescription">Voici la situation de votre caisse aujourd'hui.</p></div><button class="primary-btn" onclick="openOperationModal('entry')">＋ Nouvelle entrée</button></div>
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-top"><span class="stat-label">Solde actuel</span><div class="stat-icon icon-blue">💰</div></div><div class="stat-value" id="balanceValue">0 FCFA</div><div class="stat-change">Entrées − sorties</div></div>
+<div class="stat-card"><div class="stat-top"><span class="stat-label">Total des ventes</span><div class="stat-icon icon-green">📈</div></div><div class="stat-value" id="incomeValue">0 FCFA</div><div class="stat-change">Argent généré par les ventes</div></div>
+<div class="stat-card"><div class="stat-top"><span class="stat-label">Total des dépenses</span><div class="stat-icon icon-red">📉</div></div><div class="stat-value" id="expenseValue">0 FCFA</div><div class="stat-change">Sorties de caisse</div></div>
+<div class="stat-card"><div class="stat-top"><span class="stat-label">Bénéfice estimé</span><div class="stat-icon icon-orange">📊</div></div><div class="stat-value" id="profitValue">0 FCFA</div><div class="stat-change">Ventes − coût d’achat − charges</div></div>
+</div>
+<div class="dashboard-grid">
+<div class="card"><div class="card-header"><div><div class="card-title">Évolution de la caisse</div><div class="card-subtitle">Les 7 derniers jours</div></div></div><div class="chart" id="cashChart"></div></div>
+<div class="card"><div class="card-header"><div><div class="card-title">Actions rapides</div><div class="card-subtitle">Gérez votre activité</div></div></div><div class="card-body"><div class="quick-actions">
+<button class="quick-btn" onclick="openOperationModal('entry')">📈<strong>Nouvelle entrée</strong><span>Ajouter une recette</span></button>
+<button class="quick-btn" onclick="openOperationModal('expense')">📉<strong>Nouvelle dépense</strong><span>Enregistrer une sortie</span></button>
+<button class="quick-btn" onclick="navigate('sales')">🧾<strong>Nouvelle vente</strong><span>Enregistrer une vente</span></button>
+<button class="quick-btn" onclick="navigate('products')">📦<strong>Ajouter un produit</strong><span>Gérer le stock</span></button>
+</div></div></div>
+</div>
+<div class="card"><div class="card-header"><div><div class="card-title">Dernières opérations</div><div class="card-subtitle">Votre activité récente</div></div><button class="secondary-btn" onclick="navigate('history')">Voir tout</button></div><div class="card-body"><div id="recentOperations"></div></div></div>
+<div class="card product-dashboard"><div class="card-header"><div><div class="card-title">📦 Résultats de chaque produit</div><div class="card-subtitle">Le bénéfice est calculé : prix de revente − prix d’achat, puis × quantité vendue.</div></div><button class="secondary-btn" onclick="navigate('products')">Gérer les produits</button></div><div class="card-body"><div id="productPerformanceDashboard"></div></div></div>
+</section>
+
+<section class="page" id="page-operations">
+<div class="section-head"><div><h2>Opérations</h2><p>Enregistrez les entrées et les sorties de votre caisse.</p></div><div><button class="primary-btn" onclick="openOperationModal('entry')">＋ Ajouter une entrée</button> <button class="secondary-btn" onclick="openOperationModal('expense')">− Dépense</button></div></div>
+<div class="card"><div class="card-body" style="padding-top:20px"><div id="operationsTable"></div></div></div>
+</section>
+
+<section class="page" id="page-history">
+<div class="section-head"><div><h2>Historique</h2><p>Consultez toutes les opérations enregistrées.</p></div></div>
+<div class="filters"><button class="filter-btn active" data-history-filter="all">Toutes</button><button class="filter-btn" data-history-filter="entry">Entrées</button><button class="filter-btn" data-history-filter="expense">Dépenses</button></div>
+<div class="card"><div class="card-body" style="padding-top:20px"><div id="historyTable"></div></div></div>
+</section>
+
+<section class="page" id="page-products">
+<div class="section-head"><div><h2>Produits</h2><p>Gérez vos produits et votre stock.</p></div><button class="primary-btn" onclick="openProductModal()">＋ Ajouter un produit</button></div>
+<div id="productsGrid"></div>
+<div class="card product-dashboard" style="margin-top:20px"><div class="card-header"><div><div class="card-title">📊 Tableau de vente par produit</div><div class="card-subtitle">Chaque vente est détaillée avec prix d’achat, prix de revente et bénéfice.</div></div></div><div class="card-body"><div id="productSalesTable"></div></div></div>
+</section>
+
+<section class="page" id="page-sales">
+<div class="section-head"><div><h2>Ventes</h2><p>Enregistrez une vente et mettez automatiquement le stock à jour.</p></div></div>
+<div class="card form-card"><div class="form-grid">
+<div class="form-group full"><label>Produit</label><select id="saleProduct"></select></div>
+<div class="form-group"><label>Quantité</label><input id="saleQuantity" type="number" min="1" value="1"></div>
+<div class="form-group"><label>Prix d’achat unitaire</label><input id="saleBuyPrice" disabled value="0 FCFA"></div><div class="form-group"><label>Prix de revente unitaire</label><input id="salePrice" type="number" min="0" placeholder="0"></div>
+<div class="form-group full"><label>Client (facultatif)</label><input id="saleClient" placeholder="Nom du client"></div>
+<div class="form-group full"><label>Total de la vente</label><input id="saleTotal" disabled value="0 FCFA"></div>
+</div><div class="form-actions"><button class="secondary-btn" onclick="resetSaleForm()">Réinitialiser</button><button class="primary-btn" onclick="saveSale()">✓ Enregistrer la vente</button></div></div>
+</section>
+
+<section class="page" id="page-clients">
+<div class="section-head"><div><h2>Clients</h2><p>Gérez vos clients et leur historique.</p></div><button class="primary-btn" onclick="openClientModal()">＋ Ajouter un client</button></div><div id="clientsGrid"></div>
+</section>
+
+<section class="page" id="page-statistics">
+<div class="section-head"><div><h2>Statistiques</h2><p>Analysez les performances de votre commerce et de chaque produit.</p></div><div class="export-actions"><select class="period-select" id="reportPeriod"><option value="7">Cette semaine</option><option value="30">30 derniers jours</option><option value="all">Toutes les ventes</option></select><button class="secondary-btn" onclick="exportSalesExcel()">📊 Excel</button><button class="primary-btn" onclick="exportSalesPDF()">📄 PDF</button></div></div>
+<div class="analysis-grid"><div class="analysis-card"><h3>Chiffre d'affaires</h3><strong id="statRevenue">0 FCFA</strong></div><div class="analysis-card"><h3>Coût des produits vendus</h3><strong id="statCOGS">0 FCFA</strong></div><div class="analysis-card"><h3>Bénéfice brut</h3><strong id="statGrossProfit">0 FCFA</strong></div></div>
+<div class="metric-strip"><div class="metric-box"><small>Charges hors marchandises</small><strong id="statOperatingExpenses">0 FCFA</strong></div><div class="metric-box"><small>Bénéfice net estimé</small><strong id="statProfit2">0 FCFA</strong></div><div class="metric-box"><small>Quantité vendue</small><strong id="statUnitsSold">0</strong></div><div class="metric-box"><small>Marge brute</small><strong id="statMargin">0 %</strong></div></div>
+<div class="dashboard-grid"><div class="card"><div class="card-header"><div><div class="card-title">Entrées vs sorties</div><div class="card-subtitle">Vue globale</div></div></div><div class="chart" id="statisticsChart"></div></div>
+<div class="card"><div class="card-header"><div><div class="card-title">Résumé</div><div class="card-subtitle">Quelques indicateurs utiles</div></div></div><div class="card-body">
+<div class="info-box" style="margin-bottom:10px"><small>Nombre d'opérations</small><strong id="statOperations">0</strong></div>
+<div class="info-box" style="margin-bottom:10px"><small>Nombre de ventes</small><strong id="statSales">0</strong></div>
+<div class="info-box"><small>Produits en stock</small><strong id="statProducts">0</strong></div>
+</div></div></div>
+</section>
+
+
+<section class="page" id="page-about">
+<div class="section-head"><div><h2>À propos</h2><p>Le fondateur de Ma Caisse et les informations de contact.</p></div></div>
+<div class="setting-card">
+<div class="about-founder-full">
+<img src="./founder.jpg" alt="Gaston N3">
+<div><span class="tag">Fondateur de l’application</span><h3>Gaston N3</h3>
+<p>Entrepreneur digital, YouTubeur passionné, expert en marketing digital et expert en e-commerce. Formateur &amp; coach et créateur de produits digitaux, Gaston N3 développe des solutions pratiques pour aider les entrepreneurs et les commerçants à mieux gérer et développer leur activité.</p>
+<div class="founder-links" style="margin-top:12px">
+<a class="founder-link whatsapp" href="https://wa.me/242068621744" target="_blank" rel="noopener">🟢 +242 06 862 17 44</a>
+<a class="founder-link youtube" href="https://www.youtube.com/results?search_query=GASTON+N3" target="_blank" rel="noopener">▶ GASTON N3</a>
+<a class="founder-link facebook" href="https://www.facebook.com/search/pages/?q=GASTON%20N3" target="_blank" rel="noopener">f GASTON N3</a>
+</div></div></div>
+</div>
+<div class="setting-card" style="margin-top:18px"><h3>🧾 Ma Caisse</h3><p>Application de gestion de commerce pensée pour fonctionner simplement, avec possibilité d’utilisation hors connexion.</p><strong>Version 1.4</strong></div>
+</section>
+
+<section class="page" id="page-settings">
+<div class="section-head"><div><h2>Paramètres</h2><p>Personnalisez votre espace Ma Caisse.</p></div></div>
+<div class="settings-grid">
+<div class="setting-card"><h3>🏪 Mon commerce</h3><p>Personnalisez le nom, la description et l'identité visuelle de votre boutique.</p>
+<div class="profile-brand"><div class="brand-preview" id="settingsLogoPreview">💰</div><div><div class="brand-name" id="settingsBrandName">Ma Caisse</div><div class="brand-description" id="settingsBrandDescription">Gestion simple du commerce</div></div></div>
+<div class="form-group" style="margin-bottom:12px"><label>Nom de la boutique / commerce</label><input id="shopName" placeholder="Ex : Boutique Gaston"></div>
+<div class="form-group" style="margin-bottom:12px"><label>Petite description</label><textarea id="shopDescription" placeholder="Ex : Boutique de vêtements et accessoires"></textarea></div>
+<div class="form-group" style="margin-bottom:12px"><label>Téléphone</label><input id="shopPhone" placeholder="+242 ..."></div>
+<div class="form-group" style="margin-bottom:12px"><label>Adresse</label><input id="shopAddress" placeholder="Adresse du commerce"></div>
+<div class="logo-upload"><div class="brand-preview" id="settingsLogoPreview2">💰</div><div><label for="shopLogo">🖼 Ajouter le logo / l'image de la boutique</label><input id="shopLogo" type="file" accept="image/png,image/jpeg,image/webp" hidden><br><small>Image enregistrée localement sur cet appareil.</small></div></div>
+<div class="form-actions"><button class="primary-btn" onclick="saveSettings()">Enregistrer les informations</button></div></div>
+</div><div class="setting-card"><h3>📲 Installer ou télécharger Ma Caisse</h3>
+<p>Utilisez le bouton d’installation pour ajouter Ma Caisse comme une vraie application. Le téléchargement ZIP sert à conserver les fichiers de la version hors connexion.</p>
+<div class="offline-pill">● Application PWA · fonctionnement hors connexion</div>
+<div class="professional-download">
+<button class="primary-btn install-btn" id="installAppBtn" onclick="installApp()">📲 Installer Ma Caisse</button>
+<a class="download-btn" id="downloadAppPackage" href="./ma-caisse-v1.4-pwa.zip" download>⬇ Télécharger l’application (ZIP)</a>
+</div>
+<p style="margin-top:12px;font-size:11px">Sur iPhone : Safari → Partager → Sur l’écran d’accueil. Sur Android : Chrome → Installer l’application.</p>
+</div>
+<div class="setting-card"><h3>💾 Vos données</h3><p>Exportez vos données pour les conserver ou les restaurer.</p><div class="setting-actions"><button class="secondary-btn" onclick="exportData()">📥 Exporter mes données</button><button class="secondary-btn" onclick="document.getElementById('importFile').click()">📤 Restaurer mes données</button><input type="file" id="importFile" accept=".json" hidden></div></div>
+<div class="setting-card"><h3>⚠️ Zone de sécurité</h3><p>La suppression des données est définitive sur cet appareil.</p><button class="secondary-btn" style="color:var(--danger)" onclick="resetAllData()">🗑 Réinitialiser toutes les données</button></div>
+<div class="setting-card">
+<h3>ℹ️ À propos du fondateur</h3>
+<div class="founder-mini">
+<img src="./founder.jpg" alt="Gaston N3">
+<div>
+<h4>Gaston N3</h4>
+<p>Entrepreneur digital · YouTubeur passionné · Expert en marketing digital · Expert en e-commerce · Formateur &amp; coach · Créateur de produits digitaux.</p>
+<div class="founder-links">
+<a class="founder-link whatsapp" href="https://wa.me/242068621744" target="_blank" rel="noopener">🟢 WhatsApp</a>
+<a class="founder-link youtube" href="https://www.youtube.com/results?search_query=GASTON+N3" target="_blank" rel="noopener">▶ YouTube · GASTON N3</a>
+<a class="founder-link facebook" href="https://www.facebook.com/search/pages/?q=GASTON%20N3" target="_blank" rel="noopener">f Facebook · GASTON N3</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+
+
+<div class="modal-overlay setup-modal" id="setupModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Bienvenue dans Ma Caisse 👋</h3><button class="close" onclick="skipSetup()">×</button></div>
+    <div class="modal-body">
+      <div class="setup-hero"><h2>Configurez votre boutique</h2><p>Créez votre espace en quelques secondes. Ces informations restent enregistrées sur votre téléphone et peuvent être modifiées à tout moment.</p></div>
+      <div class="form-grid">
+        <div class="form-group full"><label>Nom de la boutique</label><input id="setupShopName" placeholder="Ex : Boutique Gaston"></div>
+        <div class="form-group full"><label>Petite description</label><textarea id="setupShopDescription" placeholder="Ex : Vente de vêtements, chaussures et accessoires"></textarea></div>
+        <div class="form-group"><label>Téléphone</label><input id="setupShopPhone" placeholder="+242 ..."></div>
+        <div class="form-group"><label>Adresse</label><input id="setupShopAddress" placeholder="Ville / quartier"></div>
+        <div class="form-group full"><label>Logo ou image de la boutique</label><div class="logo-upload"><div class="brand-preview" id="setupLogoPreview">💰</div><div><label for="setupLogo">🖼 Choisir une image</label><input id="setupLogo" type="file" accept="image/png,image/jpeg,image/webp" hidden><br><small>Facultatif. L'image sera stockée localement.</small></div></div></div>
+      </div>
+      <div class="form-actions"><button class="secondary-btn" onclick="skipSetup()">Configurer plus tard</button><button class="primary-btn" onclick="finishSetup()">✓ Créer mon espace</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="operationModal"><div class="modal"><div class="modal-header"><h3 id="operationModalTitle">Ajouter une entrée</h3><button class="close" onclick="closeModal('operationModal')">×</button></div><div class="modal-body"><div class="form-grid">
+<div class="form-group"><label>Type</label><select id="operationType"><option value="entry">Entrée</option><option value="expense">Dépense</option></select></div>
+<div class="form-group"><label>Catégorie</label><select id="operationCategory"></select></div>
+<div class="form-group"><label>Montant</label><input id="operationAmount" type="number" min="1" placeholder="Ex : 25000"></div>
+<div class="form-group"><label>Date</label><input id="operationDate" type="date"></div>
+<div class="form-group full"><label>Description</label><textarea id="operationDescription" placeholder="Ex : Vente de 2 pantalons"></textarea></div>
+</div><div class="form-actions"><button class="secondary-btn" onclick="closeModal('operationModal')">Annuler</button><button class="primary-btn" onclick="saveOperation()">Enregistrer</button></div></div></div></div>
+
+<div class="modal-overlay" id="productModal"><div class="modal"><div class="modal-header"><h3>Ajouter un produit</h3><button class="close" onclick="closeModal('productModal')">×</button></div><div class="modal-body"><div class="form-grid">
+<div class="form-group full"><label>Nom du produit</label><input id="productName" placeholder="Ex : T-shirt"></div>
+<div class="form-group"><label>Référence</label><input id="productRef" placeholder="Ex : TS001"></div><div class="form-group"><label>Catégorie</label><input id="productCategory" placeholder="Ex : Vêtements"></div>
+<div class="form-group"><label>Prix d'achat</label><input id="productBuyPrice" type="number" min="0" placeholder="5000"></div><div class="form-group"><label>Prix de vente</label><input id="productSellPrice" type="number" min="0" placeholder="8000"></div>
+<div class="form-group"><label>Quantité en stock</label><input id="productStock" type="number" min="0" placeholder="15"></div><div class="form-group"><label>Stock minimum</label><input id="productMinStock" type="number" min="0" placeholder="3"></div>
+</div><div class="form-actions"><button class="secondary-btn" onclick="closeModal('productModal')">Annuler</button><button class="primary-btn" onclick="saveProduct()">Ajouter</button></div></div></div></div>
+
+<div class="modal-overlay" id="clientModal"><div class="modal"><div class="modal-header"><h3>Ajouter un client</h3><button class="close" onclick="closeModal('clientModal')">×</button></div><div class="modal-body"><div class="form-grid">
+<div class="form-group full"><label>Nom du client</label><input id="clientName" placeholder="Ex : Jean"></div><div class="form-group"><label>Téléphone</label><input id="clientPhone" placeholder="06 XX XX XX"></div><div class="form-group"><label>Dette initiale</label><input id="clientDebt" type="number" min="0" value="0"></div>
+</div><div class="form-actions"><button class="secondary-btn" onclick="closeModal('clientModal')">Annuler</button><button class="primary-btn" onclick="saveClient()">Ajouter</button></div></div></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY="maCaisseData_v1";
+const defaultData={operations:[],products:[],clients:[],sales:[],settings:{shopName:"Ma Caisse",shopDescription:"Gestion simple du commerce",shopPhone:"",shopAddress:"",shopLogo:"",profileCompleted:false}};
+let data=loadData(),currentHistoryFilter="all";
+function loadData(){try{const r=localStorage.getItem(STORAGE_KEY);if(!r)return structuredClone(defaultData);const p=JSON.parse(r);return{operations:Array.isArray(p.operations)?p.operations:[],products:Array.isArray(p.products)?p.products:[],clients:Array.isArray(p.clients)?p.clients:[],sales:Array.isArray(p.sales)?p.sales:[],settings:{...defaultData.settings,...(p.settings||{})}}}catch(e){return structuredClone(defaultData)}}
+function saveData(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}catch(e){showToast("Impossible de sauvegarder les données.")}}
+function money(v){return new Intl.NumberFormat("fr-FR",{maximumFractionDigits:0}).format(Number(v)||0)+" FCFA"}
+function dateInputValue(d=new Date()){const o=d.getTimezoneOffset(),l=new Date(d.getTime()-o*60000);return l.toISOString().split("T")[0]}
+function formatDate(v){if(!v)return"-";const d=new Date(v+"T00:00:00");return Number.isNaN(d.getTime())?v:d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"})}
+function escapeHTML(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function uid(p="id"){return p+"_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)}
+function showToast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove("show"),2500)}
+const pageNames={dashboard:"Tableau de bord",operations:"Opérations",history:"Historique",products:"Produits",sales:"Ventes",clients:"Clients",statistics:"Statistiques",settings:"Paramètres"};
+function navigate(page){document.querySelectorAll(".page").forEach(e=>e.classList.remove("active"));document.getElementById("page-"+page)?.classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));document.getElementById("pageTitle").textContent=pageNames[page]||"Ma Caisse";document.getElementById("sidebar").classList.remove("open");renderAll()}
+document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.page)));
+document.getElementById("mobileMenu").onclick=()=>document.getElementById("sidebar").classList.toggle("open");
+document.getElementById("topAddBtn").onclick=()=>openOperationModal("entry");
+
+const entryCategories=[["Vente","Vente"],["Service","Service"],["Paiement client","Paiement client"],["Autre","Autre"]];
+const expenseCategories=[["Marchandises","Achat de marchandises"],["Transport","Transport"],["Électricité","Électricité"],["Salaire","Salaire"],["Loyer","Loyer"],["Internet","Internet"],["Entretien","Entretien"],["Autre","Autre"]];
+function updateOperationCategories(type){document.getElementById("operationCategory").innerHTML=(type==="expense"?expenseCategories:entryCategories).map(x=>`<option value="${escapeHTML(x[0])}">${escapeHTML(x[1])}</option>`).join("")}
+function openOperationModal(type="entry"){document.getElementById("operationType").value=type;document.getElementById("operationAmount").value="";document.getElementById("operationDate").value=dateInputValue();document.getElementById("operationDescription").value="";document.getElementById("operationModalTitle").textContent=type==="expense"?"Ajouter une dépense":"Ajouter une entrée";updateOperationCategories(type);document.getElementById("operationModal").classList.add("show")}
+document.getElementById("operationType").onchange=e=>{document.getElementById("operationModalTitle").textContent=e.target.value==="expense"?"Ajouter une dépense":"Ajouter une entrée";updateOperationCategories(e.target.value)}
+function saveOperation(){const type=document.getElementById("operationType").value,amount=Number(document.getElementById("operationAmount").value),category=document.getElementById("operationCategory").value,date=document.getElementById("operationDate").value,description=document.getElementById("operationDescription").value.trim();if(!amount||amount<=0)return showToast("Veuillez entrer un montant valide.");if(!date)return showToast("Veuillez sélectionner une date.");data.operations.push({id:uid("op"),type,amount,category,description:description||category,date,createdAt:new Date().toISOString()});saveData();closeModal("operationModal");renderAll();showToast(type==="expense"?"Dépense enregistrée ✓":"Entrée enregistrée ✓")}
+function deleteOperation(id){if(!confirm("Supprimer cette opération ?"))return;data.operations=data.operations.filter(o=>o.id!==id);saveData();renderAll();showToast("Opération supprimée.")}
+function salesMetrics(period="all"){
+  const now=new Date(); now.setHours(23,59,59,999);
+  let sales=[...data.sales];
+  if(period!=="all"){const days=Number(period)||7;const from=new Date();from.setHours(0,0,0,0);from.setDate(from.getDate()-(days-1));sales=sales.filter(s=>new Date(s.date+"T00:00:00")>=from&&new Date(s.date+"T00:00:00")<=now)}
+  const revenue=sales.reduce((sum,s)=>sum+Number(s.total||0),0);
+  const cogs=sales.reduce((sum,s)=>sum+Number(s.buyPrice||0)*Number(s.quantity||0),0);
+  const grossProfit=revenue-cogs;
+  return {sales,revenue,cogs,grossProfit,units:sales.reduce((sum,s)=>sum+Number(s.quantity||0),0)};
+}
+function totals(){
+  const income=data.operations.filter(o=>o.type==="entry").reduce((s,o)=>s+Number(o.amount),0);
+  const expenses=data.operations.filter(o=>o.type==="expense").reduce((s,o)=>s+Number(o.amount),0);
+  const sale= salesMetrics("all");
+  const merchandiseExpenses=data.operations.filter(o=>o.type==="expense"&&o.category==="Marchandises").reduce((s,o)=>s+Number(o.amount),0);
+  const operatingExpenses=expenses-merchandiseExpenses;
+  const netProfit=sale.grossProfit-operatingExpenses;
+  return {income,expenses,balance:income-expenses,profit:netProfit,salesRevenue:sale.revenue,cogs:sale.cogs,grossProfit:sale.grossProfit,operatingExpenses};
+}
+
+function createOperationsTable(ops,actions=true){return`<div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Catégorie</th><th>Description</th><th>Montant</th>${actions?"<th>Action</th>":""}</tr></thead><tbody>${ops.map(o=>`<tr><td>${formatDate(o.date)}</td><td><span class="badge ${o.type==="entry"?"badge-entry":"badge-expense"}">${o.type==="entry"?"Entrée":"Dépense"}</span></td><td>${escapeHTML(o.category)}</td><td>${escapeHTML(o.description)}</td><td class="${o.type==="entry"?"amount-positive":"amount-negative"}">${o.type==="entry"?"+":"-"}${money(o.amount)}</td>${actions?`<td><button class="secondary-btn" style="padding:6px 9px;font-size:11px;color:var(--danger)" onclick="deleteOperation('${o.id}')">Supprimer</button></td>`:""}</tr>`).join("")}</tbody></table></div>`}
+function renderDashboard(){
+ const t=totals(); balanceValue.textContent=money(t.balance);incomeValue.textContent=money(t.salesRevenue);expenseValue.textContent=money(t.expenses);profitValue.textContent=money(t.profit);renderCashChart();
+ const ops=[...data.operations].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);recentOperations.innerHTML=ops.length?createOperationsTable(ops,false):`<div class="empty"><div class="empty-icon">📋</div>Aucune opération pour le moment.</div>`;
+ renderProductPerformanceDashboard();
+}
+function productPerformanceRows(period="all"){
+ const sales=salesMetrics(period).sales, map={};
+ sales.forEach(s=>{if(!map[s.productId])map[s.productId]={productName:s.productName,quantity:0,buyCost:0,revenue:0,profit:0};const x=map[s.productId];x.quantity+=Number(s.quantity||0);x.buyCost+=Number(s.buyPrice||0)*Number(s.quantity||0);x.revenue+=Number(s.total||0);x.profit+=Number(s.profit!=null?s.profit:(Number(s.sellPrice||s.price||0)-Number(s.buyPrice||0))*Number(s.quantity||0));});
+ return Object.values(map).sort((a,b)=>b.profit-a.profit);
+}
+function productTableHTML(rows){return rows.length?`<div class="table-wrap"><table><thead><tr><th>Produit vendu</th><th>Quantité</th><th>Prix d’achat</th><th>Prix de revente</th><th>Coût d’achat</th><th>Ventes</th><th>Bénéfice</th></tr></thead><tbody>${rows.map(r=>{const unitBuy=r.quantity?r.buyCost/r.quantity:0,unitSell=r.quantity?r.revenue/r.quantity:0;return `<tr><td><strong>${escapeHTML(r.productName)}</strong></td><td>${r.quantity}</td><td>${money(unitBuy)}</td><td>${money(unitSell)}</td><td>${money(r.buyCost)}</td><td>${money(r.revenue)}</td><td class="${r.profit>=0?'profit-positive':'profit-negative'}">${r.profit>=0?'+':''}${money(r.profit)}</td></tr>`}).join('')}</tbody></table></div>`:`<div class="empty"><div class="empty-icon">📊</div>Aucune vente enregistrée pour le moment.</div>`}
+function renderProductPerformanceDashboard(){productPerformanceDashboard.innerHTML=productTableHTML(productPerformanceRows("all"))}
+
+function renderOperations(){const ops=[...data.operations].sort((a,b)=>new Date(b.date)-new Date(a.date));operationsTable.innerHTML=ops.length?createOperationsTable(ops,true):`<div class="empty"><div class="empty-icon">📋</div>Aucune opération.</div>`}
+function renderHistory(){let ops=[...data.operations].sort((a,b)=>new Date(b.date)-new Date(a.date));if(currentHistoryFilter!=="all")ops=ops.filter(o=>o.type===currentHistoryFilter);historyTable.innerHTML=ops.length?createOperationsTable(ops,true):`<div class="empty"><div class="empty-icon">📋</div>Aucune opération trouvée.</div>`}
+document.querySelectorAll("[data-history-filter]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-history-filter]").forEach(x=>x.classList.remove("active"));b.classList.add("active");currentHistoryFilter=b.dataset.historyFilter;renderHistory()});
+document.getElementById("reportPeriod").addEventListener("change",renderStatistics);
+
+function getLastSevenDays(){const a=[];for(let i=6;i>=0;i--){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);const date=dateInputValue(d),income=data.operations.filter(o=>o.date===date&&o.type==="entry").reduce((s,o)=>s+Number(o.amount),0),expenses=data.operations.filter(o=>o.date===date&&o.type==="expense").reduce((s,o)=>s+Number(o.amount),0);a.push({date,label:d.toLocaleDateString("fr-FR",{weekday:"short"}).replace(".",""),income,expenses,net:income-expenses})}return a}
+function renderLineChart(c,days,key){if(!days.length){c.innerHTML='<div class="chart-empty">Aucune donnée disponible.</div>';return}const vals=days.map(d=>Number(d[key])||0),max=Math.max(...vals,0),min=Math.min(...vals,0),w=760,h=235,l=35,r=20,t=20,b=35,range=Math.max(max-min,1),pts=vals.map((v,i)=>({x:l+(i/(vals.length-1||1))*(w-l-r),y:t+((max-v)/range)*(h-t-b)})),path=pts.map((p,i)=>(i?"L":"M")+p.x+" "+p.y).join(" "),area=path+` L ${pts.at(-1).x} ${h-b} L ${pts[0].x} ${h-b} Z`;c.innerHTML=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><line x1="${l}" y1="${t}" x2="${l}" y2="${h-b}" stroke="#e5e7eb"/><line x1="${l}" y1="${h-b}" x2="${w-r}" y2="${h-b}" stroke="#e5e7eb"/><path d="${area}" fill="#eef2ff"/><path d="${path}" fill="none" stroke="#4f46e5" stroke-width="4" stroke-linecap="round"/>${pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="5" fill="#fff" stroke="#4f46e5" stroke-width="3"/>`).join("")}${days.map((d,i)=>`<text x="${pts[i].x}" y="${h-10}" text-anchor="middle" font-size="11" fill="#6b7280">${escapeHTML(d.label)}</text>`).join("")}</svg>`}
+function renderCashChart(){renderLineChart(cashChart,getLastSevenDays(),"net")}
+function shortMoney(v){v=Number(v)||0;return v>=1000000?(v/1000000).toFixed(1)+"M":v>=1000?Math.round(v/1000)+"K":String(v)}
+function renderStatisticsChart(m=salesMetrics("all")){const t={income:m.revenue,expenses:m.cogs},max=Math.max(t.income,t.expenses,1),w=500,h=230,ih=Math.max(t.income/max*160,5),eh=Math.max(t.expenses/max*160,5);statisticsChart.innerHTML=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><line x1="55" y1="190" x2="470" y2="190" stroke="#e5e7eb"/><rect x="120" y="${190-ih}" width="90" height="${ih}" rx="12" fill="#4f46e5"/><rect x="290" y="${190-eh}" width="90" height="${eh}" rx="12" fill="#dc2626"/><text x="165" y="215" text-anchor="middle" font-size="12" fill="#6b7280">Entrées</text><text x="335" y="215" text-anchor="middle" font-size="12" fill="#6b7280">Dépenses</text><text x="165" y="${Math.max(190-ih-10,15)}" text-anchor="middle" font-size="12" font-weight="700">${escapeHTML(shortMoney(t.income))}</text><text x="335" y="${Math.max(190-eh-10,15)}" text-anchor="middle" font-size="12" font-weight="700">${escapeHTML(shortMoney(t.expenses))}</text></svg>`}
+
+function openProductModal(){["productName","productRef","productCategory","productBuyPrice","productSellPrice"].forEach(id=>document.getElementById(id).value="");productStock.value="0";productMinStock.value="0";productModal.classList.add("show")}
+function saveProduct(){const name=productName.value.trim(),ref=productRef.value.trim(),category=productCategory.value.trim()||"Autre",buyPrice=Number(productBuyPrice.value)||0,sellPrice=Number(productSellPrice.value)||0,stock=Number(productStock.value)||0,minStock=Number(productMinStock.value)||0;if(!name)return showToast("Veuillez entrer le nom du produit.");if([buyPrice,sellPrice,stock,minStock].some(v=>v<0))return showToast("Vérifiez les valeurs saisies.");data.products.push({id:uid("prod"),name,ref,category,buyPrice,sellPrice,stock,minStock});saveData();closeModal("productModal");renderAll();showToast("Produit ajouté ✓")}
+function deleteProduct(id){if(!confirm("Supprimer ce produit ?"))return;data.products=data.products.filter(p=>p.id!==id);saveData();renderAll();showToast("Produit supprimé.")}
+function renderProducts(){
+ if(!data.products.length){productsGrid.innerHTML=`<div class="card"><div class="empty"><div class="empty-icon">📦</div><strong>Aucun produit</strong><p>Ajoutez votre premier produit.</p></div></div>`}else{productsGrid.innerHTML=`<div class="items-grid">${data.products.map(p=>{const sold=data.sales.filter(s=>s.productId===p.id).reduce((a,s)=>a+Number(s.quantity||0),0);const revenue=data.sales.filter(s=>s.productId===p.id).reduce((a,s)=>a+Number(s.total||0),0);const profit=data.sales.filter(s=>s.productId===p.id).reduce((a,s)=>a+Number(s.profit!=null?s.profit:(Number(s.sellPrice||s.price||0)-Number(s.buyPrice||p.buyPrice||0))*Number(s.quantity||0)),0);return `<div class="item-card"><div class="item-card-top"><div><div class="item-name">${escapeHTML(p.name)}</div><div class="item-category">${escapeHTML(p.category)}${p.ref?" · "+escapeHTML(p.ref):""}</div></div><div class="item-price">${money(p.sellPrice)}</div></div><div class="item-info"><div class="info-box"><small>Prix d'achat</small><strong>${money(p.buyPrice)}</strong></div><div class="info-box"><small>Prix de revente</small><strong>${money(p.sellPrice)}</strong></div><div class="info-box"><small>Stock actuel</small><strong>${p.stock}</strong></div><div class="info-box"><small>Produits vendus</small><strong>${sold}</strong></div><div class="info-box"><small>Ventes générées</small><strong>${money(revenue)}</strong></div><div class="info-box"><small>Bénéfice</small><strong class="${profit>=0?'profit-positive':'profit-negative'}">${money(profit)}</strong></div></div>${p.stock<=p.minStock?'<div style="margin-top:12px;color:var(--warning);font-size:11px;font-weight:700">⚠ Stock faible</div>':""}<button class="secondary-btn" style="width:100%;margin-top:14px;color:var(--danger)" onclick="deleteProduct('${p.id}')">Supprimer</button></div>`}).join("")}</div>`}
+ productSalesTable.innerHTML=productTableHTML(productPerformanceRows("all"));
+}
+
+function renderSaleProducts(){if(!data.products.length){saleProduct.innerHTML='<option value="">Aucun produit disponible</option>';salePrice.value="";saleBuyPrice.value="0 FCFA";updateSaleTotal();return}saleProduct.innerHTML='<option value="">Sélectionnez un produit</option>'+data.products.map(p=>`<option value="${p.id}">${escapeHTML(p.name)} — ${money(p.sellPrice)} — Stock: ${p.stock}</option>`).join("");updateSaleTotal()}
+saleProduct.onchange=()=>{const p=data.products.find(x=>x.id===saleProduct.value);salePrice.value=p?p.sellPrice:"";saleBuyPrice.value=p?money(p.buyPrice):"0 FCFA";updateSaleTotal()};saleQuantity.oninput=updateSaleTotal;salePrice.oninput=updateSaleTotal;
+function updateSaleTotal(){saleTotal.value=money((Number(saleQuantity.value)||0)*(Number(salePrice.value)||0))}
+function resetSaleForm(){saleProduct.value="";saleQuantity.value="1";salePrice.value="";saleBuyPrice.value="0 FCFA";saleClient.value="";updateSaleTotal()}
+function saveSale(){
+ const p=data.products.find(x=>x.id===saleProduct.value),q=Number(saleQuantity.value),price=Number(salePrice.value),client=saleClient.value.trim();
+ if(!p)return showToast("Sélectionnez un produit."); if(!q||q<=0)return showToast("Quantité invalide."); if(q>p.stock)return showToast("Stock insuffisant."); if(!price||price<=0)return showToast("Prix de revente invalide.");
+ const total=q*price,buyPrice=Number(p.buyPrice)||0,profit=(price-buyPrice)*q;
+ p.stock-=q;
+ data.sales.push({id:uid("sale"),productId:p.id,productName:p.name,quantity:q,buyPrice,sellPrice:price,price,total,profit,clientName:client,date:dateInputValue(),createdAt:new Date().toISOString()});
+ data.operations.push({id:uid("op"),type:"entry",amount:total,category:"Vente",description:`Vente de ${q} × ${p.name}`,date:dateInputValue(),createdAt:new Date().toISOString()});
+ if(client){const c=data.clients.find(x=>x.name.toLowerCase()===client.toLowerCase());if(c)c.totalPurchases+=total}
+ saveData();resetSaleForm();renderAll();showToast(`Vente enregistrée · bénéfice ${money(profit)} ✓`)
+}
+
+function openClientModal(){clientName.value="";clientPhone.value="";clientDebt.value="0";clientModal.classList.add("show")}
+function saveClient(){const name=clientName.value.trim(),phone=clientPhone.value.trim(),debt=Number(clientDebt.value)||0;if(!name)return showToast("Veuillez entrer le nom du client.");data.clients.push({id:uid("client"),name,phone,debt,totalPurchases:0});saveData();closeModal("clientModal");renderAll();showToast("Client ajouté ✓")}
+function deleteClient(id){if(!confirm("Supprimer ce client ?"))return;data.clients=data.clients.filter(c=>c.id!==id);saveData();renderAll();showToast("Client supprimé.")}
+function renderClients(){if(!data.clients.length){clientsGrid.innerHTML=`<div class="card"><div class="empty"><div class="empty-icon">👥</div><strong>Aucun client</strong><p>Ajoutez votre premier client.</p></div></div>`;return}clientsGrid.innerHTML=`<div class="items-grid">${data.clients.map(c=>`<div class="item-card"><div class="item-card-top"><div><div class="item-name">${escapeHTML(c.name)}</div><div class="item-category">${escapeHTML(c.phone||"Téléphone non renseigné")}</div></div><div style="font-size:24px">👤</div></div><div class="item-info"><div class="info-box"><small>Total des achats</small><strong>${money(c.totalPurchases)}</strong></div><div class="info-box"><small>Dette</small><strong style="color:${c.debt>0?"var(--danger)":"var(--success)"}">${money(c.debt)}</strong></div></div><button class="secondary-btn" style="width:100%;margin-top:14px;color:var(--danger)" onclick="deleteClient('${c.id}')">Supprimer</button></div>`).join("")}</div>`}
+
+function renderStatistics(){
+ const period=document.getElementById("reportPeriod")?.value||"7",m=salesMetrics(period),t=totals();
+ statRevenue.textContent=money(m.revenue);statCOGS.textContent=money(m.cogs);statGrossProfit.textContent=money(m.grossProfit);statOperatingExpenses.textContent=money(t.operatingExpenses);statProfit2.textContent=money(m.grossProfit-t.operatingExpenses);statUnitsSold.textContent=m.units;statMargin.textContent=m.revenue?((m.grossProfit/m.revenue)*100).toFixed(1)+" %":"0 %";statOperations.textContent=data.operations.length;statSales.textContent=data.sales.length;statProducts.textContent=data.products.reduce((s,p)=>s+Number(p.stock),0);renderStatisticsChart(m);
+}
+
+function exportSalesExcel(){
+ const period=document.getElementById("reportPeriod")?.value||"7",m=salesMetrics(period),rows=productPerformanceRows(period),title=period==="7"?"Ventes des 7 derniers jours":period==="30"?"Ventes des 30 derniers jours":"Toutes les ventes";
+ const table=`<table border="1"><tr><th colspan="7">MA CAISSE - ${title}</th></tr><tr><th>Produit vendu</th><th>Quantité</th><th>Prix d'achat unitaire</th><th>Prix de revente unitaire</th><th>Coût d'achat</th><th>Chiffre d'affaires</th><th>Bénéfice</th></tr>${rows.map(r=>{const ub=r.quantity?r.buyCost/r.quantity:0,us=r.quantity?r.revenue/r.quantity:0;return `<tr><td>${escapeHTML(r.productName)}</td><td>${r.quantity}</td><td>${ub}</td><td>${us}</td><td>${r.buyCost}</td><td>${r.revenue}</td><td>${r.profit}</td></tr>`}).join("")}<tr><th colspan="4">TOTAL</th><th>${m.cogs}</th><th>${m.revenue}</th><th>${m.grossProfit}</th></tr></table>`;
+ const blob=new Blob([`<html><head><meta charset="UTF-8"></head><body>${table}</body></html>`],{type:"application/vnd.ms-excel"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="ma-caisse-ventes.xls";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Rapport Excel téléchargé ✓");
+}
+function exportSalesPDF(){
+ const period=document.getElementById("reportPeriod")?.value||"7",m=salesMetrics(period),rows=productPerformanceRows(period),title=period==="7"?"Ventes des 7 derniers jours":period==="30"?"Ventes des 30 derniers jours":"Toutes les ventes";
+ const w=window.open("","_blank");if(!w)return showToast("Autorisez les fenêtres pop-up pour créer le PDF.");
+ w.document.write(`<!doctype html><html lang="fr"><head><meta charset="UTF-8"><title>Rapport Ma Caisse</title><style>body{font-family:Arial,sans-serif;padding:30px;color:#111}h1{margin-bottom:4px}p{color:#666}.cards{display:flex;gap:12px;margin:25px 0}.card{border:1px solid #ddd;padding:14px;flex:1}.card b{display:block;font-size:20px;margin-top:6px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ddd;padding:9px;text-align:left;font-size:12px}th{background:#f3f4f6}.profit{color:#087f5b;font-weight:bold}.footer{margin-top:30px;color:#777;font-size:11px}@media print{body{padding:0}}</style></head><body><h1>Ma Caisse</h1><p>Rapport de ventes · ${title} · ${new Date().toLocaleDateString("fr-FR")}</p><div class="cards"><div class="card">Chiffre d'affaires<b>${money(m.revenue)}</b></div><div class="card">Coût d'achat<b>${money(m.cogs)}</b></div><div class="card">Bénéfice brut<b>${money(m.grossProfit)}</b></div></div>${productTableHTML(rows)}<p class="footer">Bénéfice = (prix de revente − prix d'achat) × quantité vendue.</p><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close();
+}
+function applyBranding(){
+ const name=(data.settings.shopName||"Ma Caisse").trim()||"Ma Caisse";
+ const desc=(data.settings.shopDescription||"Gestion simple du commerce").trim()||"Gestion simple du commerce";
+ document.title=name+" — Gestion de commerce";
+ const brand=document.getElementById("brandName"); if(brand) brand.textContent=name;
+ const tag=document.getElementById("brandTagline"); if(tag) tag.textContent=desc.length>42?desc.slice(0,42)+"…":desc; const wd=document.getElementById("welcomeDescription"); if(wd)wd.textContent="Bienvenue dans "+name+" · "+desc;
+ const sb=document.getElementById("sidebarLogo"), appLogo=document.getElementById("appLogoImg");
+ if(data.settings.shopLogo){if(sb){sb.src=data.settings.shopLogo;sb.style.display="block"}}else{if(sb)sb.style.display="none"}
+ if(appLogo)appLogo.style.display="block";
+ const sn=document.getElementById("settingsBrandName"),sd=document.getElementById("settingsBrandDescription");
+ if(sn)sn.textContent=name;if(sd)sd.textContent=desc;
+ ["settingsLogoPreview","settingsLogoPreview2"].forEach(id=>{const el=document.getElementById(id);if(!el)return;if(data.settings.shopLogo){el.style.backgroundImage=`url("${data.settings.shopLogo}")`;el.style.backgroundSize="cover";el.style.backgroundPosition="center";el.textContent=""}else{el.style.backgroundImage="none";el.textContent="💰"}});
+}
+function renderSettings(){shopName.value=data.settings.shopName||"";shopDescription.value=data.settings.shopDescription||"";shopPhone.value=data.settings.shopPhone||"";shopAddress.value=data.settings.shopAddress||"";applyBranding()}
+function saveSettings(){data.settings.shopName=shopName.value.trim()||"Ma Caisse";data.settings.shopDescription=shopDescription.value.trim()||"Gestion simple du commerce";data.settings.shopPhone=shopPhone.value.trim();data.settings.shopAddress=shopAddress.value.trim();data.settings.profileCompleted=true;saveData();applyBranding();renderAll();showToast("Informations de la boutique enregistrées ✓")}
+function readAndResizeLogo(file,callback){
+ if(!file)return callback("");
+ if(!file.type.startsWith("image/"))return showToast("Choisissez une image PNG, JPG ou WebP.");
+ const reader=new FileReader();
+ reader.onload=e=>{const img=new Image();img.onload=()=>{const max=512,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));const ctx=c.getContext("2d");ctx.drawImage(img,0,0,c.width,c.height);callback(c.toDataURL("image/jpeg",.82))};img.src=e.target.result};reader.readAsDataURL(file)
+}
+function handleLogoInput(input,previewId){const f=input.files?.[0];if(!f)return;readAndResizeLogo(f,src=>{data.settings.shopLogo=src;const p=document.getElementById(previewId);if(p){p.style.backgroundImage=`url("${src}")`;p.style.backgroundSize="cover";p.style.backgroundPosition="center";p.textContent=""}applyBranding();saveData()})}
+function finishSetup(){const n=document.getElementById("setupShopName").value.trim();if(!n)return showToast("Entrez le nom de votre boutique.");data.settings.shopName=n;data.settings.shopDescription=document.getElementById("setupShopDescription").value.trim()||"Gestion simple du commerce";data.settings.shopPhone=document.getElementById("setupShopPhone").value.trim();data.settings.shopAddress=document.getElementById("setupShopAddress").value.trim();data.settings.profileCompleted=true;const f=document.getElementById("setupLogo").files?.[0];const done=()=>{saveData();closeModal("setupModal");applyBranding();renderAll();showToast("Votre espace boutique est prêt ✓")};if(f)readAndResizeLogo(f,src=>{data.settings.shopLogo=src;done()});else done()}
+function skipSetup(){data.settings.profileCompleted=true;saveData();closeModal("setupModal")}
+function maybeShowSetup(){if(!data.settings.profileCompleted){document.getElementById("setupShopName").value=data.settings.shopName==="Ma Caisse"?"":data.settings.shopName;document.getElementById("setupModal").classList.add("show")}}
+
+function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="ma-caisse-sauvegarde.json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Sauvegarde exportée ✓")}
+importFile.onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const p=JSON.parse(await f.text());if(!p||!Array.isArray(p.operations)||!Array.isArray(p.products))throw Error();data={operations:p.operations||[],products:p.products||[],clients:p.clients||[],sales:p.sales||[],settings:{...defaultData.settings,...(p.settings||{})}};saveData();renderAll();showToast("Données restaurées ✓")}catch(err){showToast("Fichier de sauvegarde invalide.")}e.target.value=""}
+function resetAllData(){if(prompt('Pour confirmer, écrivez "SUPPRIMER".')!=="SUPPRIMER")return;localStorage.removeItem(STORAGE_KEY);data=structuredClone(defaultData);renderAll();showToast("Toutes les données ont été supprimées.")}
+function closeModal(id){document.getElementById(id).classList.remove("show")}
+document.querySelectorAll(".modal-overlay").forEach(o=>o.addEventListener("click",e=>{if(e.target===o)o.classList.remove("show")}));
+function renderAll(){renderDashboard();renderOperations();renderHistory();renderProducts();renderSaleProducts();renderClients();renderStatistics();renderSettings()}
+function renderDate(){currentDate.textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+renderDate();renderAll();applyBranding();maybeShowSetup();setInterval(renderDate,60000);
+
+let deferredInstallPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstallPrompt=e;const b=document.getElementById("installAppBtn");if(b)b.style.display="inline-flex"});
+window.addEventListener("appinstalled",()=>{deferredInstallPrompt=null;showToast("Ma Caisse est installée ✓")});
+async function installApp(){
+ if(deferredInstallPrompt){deferredInstallPrompt.prompt();const r=await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;if(r.outcome==="accepted")showToast("Installation lancée ✓");return}
+ showToast("Installation : Android → Chrome → Installer l'application. iPhone → Safari → Partager → Sur l’écran d’accueil.");
+}
+document.getElementById("shopLogo")?.addEventListener("change",e=>handleLogoInput(e.target,"settingsLogoPreview2"));
+document.getElementById("setupLogo")?.addEventListener("change",e=>handleLogoInput(e.target,"setupLogoPreview"));
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
+
+</script>
+</body>
+</html>
